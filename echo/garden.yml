@@ -1,0 +1,6 @@
+
+module:
+  description: echo
+  name: echo
+  type: openfaas
+  lang: go

@@ -1,0 +1,7 @@
+project:
+  name: dilate
+  environments:
+    - name: local
+      providers:
+        - name: local-kubernetes
+        - name: openfaas

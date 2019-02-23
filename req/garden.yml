@@ -1,0 +1,6 @@
+
+module:
+  description: req
+  name: req
+  type: openfaas
+  lang: go
