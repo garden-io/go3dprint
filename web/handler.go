@@ -32,7 +32,7 @@ func html() string {
 	function send(){
 	  $.ajax({
 	    type: "get",
-	    url: "http://go-faas.192.168.99.101.nip.io/function/mesh",
+	    url: "http://go3dprint.192.168.99.101.nip.io/function/mesh",
 	    success:function(data)
 	    {
 	        // console.log(data);

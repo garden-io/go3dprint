@@ -27,7 +27,7 @@ func Handle(req handler.Request) (handler.Response, error) {
 }
 
 func askMesh() []byte {
-	resp, err := http.Get("http://go-faas.192.168.99.101.nip.io/function/mesh")
+	resp, err := http.Get("http://go3dprint.192.168.99.101.nip.io/function/mesh")
 	if err != nil {
 		log.Fatalln(err)
 	}

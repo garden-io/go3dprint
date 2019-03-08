@@ -1,5 +1,5 @@
 project:
-  name: go-faas
+  name: go3dprint
   environments:
     - name: local
       providers:
