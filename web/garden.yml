@@ -1,0 +1,11 @@
+kind: Module
+type: openfaas
+name: web
+lang: golang-http
+handler: ./
+build:
+  dependencies:
+  - name: openfaas-templates
+    copy:
+    - source: template
+      target: .
