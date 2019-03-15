@@ -1,0 +1,13 @@
+module:
+  name: svgtopng
+  description: Receives SVG, returns PNG.
+  type: container
+  dockerfile: Dockerfile
+  services:
+    - name: webserver
+      ports:
+        - name: http
+          containerPort: 8080
+      ingresses:
+        - path: /svgtopng
+          port: http

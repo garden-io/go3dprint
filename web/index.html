@@ -1,33 +1,58 @@
 <!doctype html>
 <html>
 <head>
-  <meta charset="utf-8">
+	<meta charset="utf-8">
+	<title></title>
+	<script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
 
-  <title></title>
+        function getMesh() {
+            $.ajax({
+                type: "GET",
+                url: "http://garden.local/function/mesh",
+                success: function(data) {
+                    var dataObj = JSON.parse(data);
+                    if (dataObj.TwoD != "") {
+                        // console.log("There's content on 2D!")
+                        canvg(document.getElementById('canvas'), "<svg width='300' height='300'></svg>")
+                        canvg(document.getElementById('canvas'), window.atob(dataObj.TwoD), {
+                            ignoreDimensions: true
+                        });
+                        // $("#forminput").attr("value", data);
+                        // viewBox="0 0 300 300" preserveAspectRatio="xMinYMin meet"
+                    }
+                    if (dataObj.ThreeD != "") {
+                        // console.log("There's content on 3D!")
+                        postRender(dataObj.ThreeD)
+                    }
+                    setTimeout(function() {
+                        getMesh();
+                    }, 1000);
+                }
+            })
+        };
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type="text/javascript">
-      $.ajax({
-        type: "get",
-        url: "http://go-faas.192.168.99.101.nip.io/function/func2",
-        success:function(data)
-        {
-            console.log(data);
-            document.getElementById("text").innerHTML = data;
-            setTimeout(function(){
-                send();
-            }, 1000);
-        }
-    });
-  </script>
+        function postRender(data) {
+            $("#forminput").attr("value", data);
+            $("#formid").submit();
+        };
 
-  <style type="text/css">
-  </style>
+        getMesh()
+// Cache-Control: no-store
+// newImage.src = "http://localhost/image.jpg?" + new Date().getTime();
 
+	</script>
+
+	<style type="text/css">
+	</style>
 </head>
-
 <body>
-    <h1 id="text">Test text.</h1>
-</body>
+	<canvas id="canvas" width="300px" height="300px"></canvas>
+    <iframe name="pic" id="pic" src="about:blank" height="300" width="300"></iframe>
 
+    <form action="http://garden.local/function/render" method="post" target="pic" id="formid">
+        <input id="forminput" type="hidden" name="stl" value="bar" />
+    </form>
+</body>
 </html>

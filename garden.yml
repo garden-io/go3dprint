@@ -4,6 +4,7 @@ project:
     - name: local
       providers:
         - name: local-kubernetes
+          defaultHostname: garden.local
         - name: openfaas
 
 

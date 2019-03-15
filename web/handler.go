@@ -1,63 +1,57 @@
 package function
 
 import (
-	// "fmt"
-	// "io/ioutil"
-	"net/http"
-
-	"github.com/openfaas-incubator/go-function-sdk"
+	"io/ioutil"
+	"path/filepath"
 )
 
-func Handle(req handler.Request) (handler.Response, error) {
+func Handle(req []byte) string {
 	var err error
 
-	return handler.Response{
-		Body:       []byte(html()),
-		StatusCode: http.StatusOK,
-	}, err
+	// go fetch()
+
+	absPath, err := filepath.Abs("./index.html")
+	if err != nil {
+		return err.Error()
+	}
+
+	file, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		return err.Error()
+	}
+
+	return string(file)
+
 }
 
-func html() string {
-	index := `
-<!doctype html>
-<html>
-<head>
-	<meta charset="utf-8">
+// func fetch() {
 
-	<title></title>
+// }
 
-	<script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script type="text/javascript">
-	function send(){
-	  $.ajax({
-	    type: "get",
-	    url: "http://go3dprint.192.168.99.101.nip.io/function/mesh",
-	    success:function(data)
-	    {
-	        // console.log(data);
-			// document.getElementById("text").innerHTML = data;
-			canvg(document.getElementById('canvas'), data);
-	        setTimeout(function(){
-	            send();
-	        }, 1000);
-	    }
-	})};
-	send()
+// package function
 
-	</script>
+// import (
+// 	"io/ioutil"
+// 	"net/http"
 
-	<style type="text/css">
-	</style>
+// 	"github.com/openfaas-incubator/go-function-sdk"
+// )
 
-</head>
+// // Handle a function invocation
+// func Handle(req handler.Request) (handler.Response, error) {
+// 	var err error
 
-<body>
-	<h1 id="text">Test text.</h1>
-	<canvas id="canvas" width="800px" height="600px"></canvas>
-</body>
+// 	file, err := ioutil.ReadFile("./index.html")
 
-</html>
-`
-	return index
-}
+// 	if err != nil {
+// 		return handler.Response{
+// 			Body:       []byte(err.Error()),
+// 			StatusCode: http.StatusInternalServerError,
+// 		}, err
+// 	}
+
+// 	return handler.Response{
+// 		Body:       []byte(file),
+// 		StatusCode: http.StatusOK,
+// 	}, nil
+// }
