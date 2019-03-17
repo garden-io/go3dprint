@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 )
@@ -16,11 +18,11 @@ type ConvertSVG struct {
 	SVGb64 string
 }
 
-func check(e error, w http.ResponseWriter) {
+func check(e error, w http.ResponseWriter, message string) {
 	if e != nil {
-		http.Error(w, e.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprint(message, ": ", e.Error()), http.StatusInternalServerError)
 	}
-	panic(e)
+	// panic(e)
 }
 
 func serve(w http.ResponseWriter, r *http.Request) {
@@ -31,30 +33,40 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
-	err = json.Unmarshal(reqBody, WHSVG)
-	check(err, w)
+	if string(reqBody)[:4] == "svg=" {
+		reqBody = reqBody[4:]
+		stringReqBody, _ := url.QueryUnescape(string(reqBody))
+		reqBody = []byte(stringReqBody)
+	}
+
+	err = json.Unmarshal(reqBody, &WHSVG)
+	check(err, w, "JSON unmarshal")
 
 	decodedSVG, err := base64.StdEncoding.DecodeString(WHSVG.SVGb64)
-	check(err, w)
+	check(err, w, "B64 decode")
 
 	file, err := os.Create(fileSVG)
-	check(err, w)
+	check(err, w, "Create SVG file")
 
 	_, err = file.Write(decodedSVG)
-	check(err, w)
+	check(err, w, "Write SVG file")
 
 	cmd := exec.Command("inkscape", "-z", "-e", filePNG, "-w", WHSVG.Width, "-h", WHSVG.Height, fileSVG, "--export-area-drawing")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
-	check(err, w)
+	check(err, w, "Inkscape")
 
 	resultPNG, err := ioutil.ReadFile(filePNG)
-	check(err, w)
+	check(err, w, "Read PNG")
 
-	encodedPNG := base64.StdEncoding.EncodeToString(resultPNG)
-	w.Header().Set("content-type", "application/json")
-	w.Write([]byte(encodedPNG))
+	// encodedPNG := base64.StdEncoding.EncodeToString(resultPNG)
+	// payload, err := json.Marshal([]byte(encodedPNG))
+	// payload, err := json.Marshal([]byte(resultPNG))
+	// check(err, w, "JSON marshal")
+	w.Header().Set("content-type", "image/png")
+	// w.Write([]byte(payload))
+	w.Write([]byte(resultPNG))
 }
 
 func main() {

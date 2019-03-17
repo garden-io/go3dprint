@@ -1,15 +1,15 @@
 package function
 
 import (
-	"bytes"
-	"encoding/base64"
+	// "bytes"
+	// "encoding/base64"
 	"encoding/json"
-	"fmt"
+	// "fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
-	"regexp"
+	// "regexp"
 
 	sdf "github.com/deadsy/sdfx/sdf"
 	"github.com/openfaas-incubator/go-function-sdk"
@@ -30,25 +30,38 @@ type ReturnObject struct {
 func Handle(req handler.Request) (handler.Response, error) {
 	var err error
 
-	rawSVG := vector()
-	encodedSVG := base64.StdEncoding.EncodeToString(rawSVG)
+	// rawSVG := vector()
+	// encodedSVG := base64.StdEncoding.EncodeToString(rawSVG)
 
-	svgtopngURL := "http://garden.local/svgtopng"
-	payload, err := json.Marshal(ConvertSVG{Width: "300", Height: "300", SVGb64: encodedSVG})
-	if err != nil {
-		panic(err)
-	}
+	// svgtopngURL := "http://garden.local/svgtopng"
+	// payload, err := json.Marshal(ConvertSVG{Width: "300", Height: "300", SVGb64: encodedSVG})
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	reqSVG, err := http.NewRequest("POST", svgtopngURL, bytes.NewBuffer(payload))
-	clientSVG := &http.Client{}
-	respSVG, err := clientSVG.Do(reqSVG)
-	if err != nil {
-		panic(err)
-	}
-	defer respSVG.Body.Close()
-	svgPng, err := ioutil.ReadAll(respSVG.Body)
+	// reqSVG, err := http.NewRequest("POST", svgtopngURL, bytes.NewBuffer(payload))
+	// clientSVG := &http.Client{}
+	// respSVG, err := clientSVG.Do(reqSVG)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer respSVG.Body.Close()
+	// svgPng, err := ioutil.ReadAll(respSVG.Body)
 
-	takeThis, err := json.Marshal(ReturnObject{TwoD: rawSVG, TwoDPNG: svgPng, ThreeD: mesh()})
+	// var blabla string
+	// json.Unmarshal(svgPng, &blabla)
+	// blablabla, _ := base64.StdEncoding.DecodeString(blabla)
+	// blablablabla, _ := base64.StdEncoding.DecodeString(string(blablabla))
+	// if req.Method == "POST" {
+	// 	return handler.Response{
+	// 		Body:       []byte(blablablabla),
+	// 		StatusCode: http.StatusOK,
+	// 	}, err
+	// }
+
+	// takeThis, err := json.Marshal(ReturnObject{TwoD: rawSVG, ThreeD: mesh()})
+	svg, stl := imsotired()
+	takeThis, err := json.Marshal(ReturnObject{TwoD: svg, ThreeD: stl})
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -59,6 +72,31 @@ func Handle(req handler.Request) (handler.Response, error) {
 		Body:       takeThis,
 		StatusCode: http.StatusOK,
 	}, err
+}
+
+func imsotired() ([]byte, []byte) {
+	sides := rand.Intn(6) + 3
+	polygon := sdf.Polygon2D(sdf.Nagon(sides, 70))
+	filename := "shape.svg"
+	sdf.RenderSVG(polygon, 20, filename, "fill:none;stroke:black;stroke-width:3px")
+	svg, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	svgString := string(svg[57:])
+	svg = []byte(svgString)
+
+	extrusion := sdf.Extrude3D(polygon, 150)
+	// m := sdf.Rotate3d(sdf.V3{0, 0, 1}, sdf.DtoR(180.0/float64(number_teeth)))
+	// m = sdf.Translate3d(sdf.V3{0, 0.39, 0}).Mul(m)
+	// extrusion = sdf.Transform3D(gear_3d, m)
+	filename = "mesh.stl"
+	sdf.RenderSTL(extrusion, 20, filename)
+	stl, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	return svg, stl
 }
 
 func vector() []byte {
@@ -90,11 +128,11 @@ func vector() []byte {
 
 	svgString := string(svg[57:])
 
-	r, _ := regexp.Compile(`width="[a-zA-Z0-9:;\.\s\(\)\-\,]*"`)
-	svgString = r.ReplaceAllString(svgString, "")
-	r, _ = regexp.Compile(`height="[a-zA-Z0-9:;\.\s\(\)\-\,]*"`)
-	svgString = r.ReplaceAllString(svgString, "viewBox='0 0 300 300'")
-	fmt.Println(svgString)
+	// r, _ := regexp.Compile(`width="[a-zA-Z0-9:;\.\s\(\)\-\,]*"`)
+	// svgString = r.ReplaceAllString(svgString, "")
+	// r, _ = regexp.Compile(`height="[a-zA-Z0-9:;\.\s\(\)\-\,]*"`)
+	// svgString = r.ReplaceAllString(svgString, "viewBox='0 0 300 300'")
+	// fmt.Println(svgString)
 	svg = []byte(svgString)
 
 	return svg

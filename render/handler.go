@@ -25,7 +25,7 @@ const (
 )
 
 var (
-	eye    = fgl.V(-3, 1, -0.75)               // camera position
+	eye    = fgl.V(-4, 2, 4)                   // camera position
 	center = fgl.V(0, -0.07, 0)                // view center position
 	up     = fgl.V(0, 1, 0)                    // up vector
 	light  = fgl.V(-0.75, 1, 0.25).Normalize() // light direction

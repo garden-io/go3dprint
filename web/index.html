@@ -14,30 +14,41 @@
                 success: function(data) {
                     var dataObj = JSON.parse(data);
                     if (dataObj.TwoD != "") {
-                        // console.log("There's content on 2D!")
-                        canvg(document.getElementById('canvas'), "<svg width='300' height='300'></svg>")
-                        canvg(document.getElementById('canvas'), window.atob(dataObj.TwoD), {
-                            ignoreDimensions: true
-                        });
+                        console.log("There's content on 2D!")
+                        // canvg(document.getElementById('canvas'), "<svg width='300' height='300'></svg>")
+                        // canvg(document.getElementById('canvas'), window.atob(dataObj.TwoD), {ignoreDimensions: true});
                         // $("#forminput").attr("value", data);
                         // viewBox="0 0 300 300" preserveAspectRatio="xMinYMin meet"
+                        myObj = {
+                            "Width": "300", 
+                            "Height": "300", 
+                            "SVGb64": dataObj.TwoD
+                        };
+                        postSVGtoPNG(JSON.stringify(myObj))
                     }
+
                     if (dataObj.ThreeD != "") {
-                        // console.log("There's content on 3D!")
+                        console.log("There's content on 3D!")
                         postRender(dataObj.ThreeD)
                     }
                     setTimeout(function() {
                         getMesh();
-                    }, 1000);
+                    }, 3000);
                 }
             })
         };
+
+        function postSVGtoPNG(data) {
+            $("#forminputsvg").attr("value", data);
+            $("#formidsvg").submit();
+        }
 
         function postRender(data) {
             $("#forminput").attr("value", data);
             $("#formid").submit();
         };
 
+        
         getMesh()
 // Cache-Control: no-store
 // newImage.src = "http://localhost/image.jpg?" + new Date().getTime();
@@ -48,11 +59,18 @@
 	</style>
 </head>
 <body>
-	<canvas id="canvas" width="300px" height="300px"></canvas>
-    <iframe name="pic" id="pic" src="about:blank" height="300" width="300"></iframe>
-
+    <!-- <canvas id="canvas" width="300px" height="300px"></canvas> -->
+    
+    <iframe name="pic" id="pic" src="about:blank" height="300" width="300" style="border: 1px solid black;"></iframe>
     <form action="http://garden.local/function/render" method="post" target="pic" id="formid">
         <input id="forminput" type="hidden" name="stl" value="bar" />
     </form>
+
+    <iframe name="svgpic" id="svgpic" src="about:blank" height="300" width="300" style="border: 1px solid black;"></iframe>
+    <form action="http://garden.local/svgtopng" method="post" target="svgpic" id="formidsvg">
+        <input id="forminputsvg" type="hidden" name="svg" value="bar" />
+    </form>
+
+
 </body>
 </html>
