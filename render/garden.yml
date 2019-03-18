@@ -1,11 +1,13 @@
-kind: Module
-type: openfaas
-name: render
-lang: golang-http
-handler: ./
-build:
-  dependencies:
-  - name: openfaas-templates
-    copy:
-    - source: template
-      target: .
+module:
+  name: render
+  description: Receives mesh, returns PNG.
+  type: container
+  dockerfile: Dockerfile
+  services:
+    - name: render
+      ports:
+        - name: http
+          containerPort: 8080
+      ingresses:
+        - path: /render
+          port: http

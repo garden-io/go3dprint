@@ -1,2 +1,0 @@
-language: golang-middleware
-fprocess: ./handler

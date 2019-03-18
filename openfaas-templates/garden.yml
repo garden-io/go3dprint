@@ -1,5 +1,0 @@
-kind: Module
-type: exec
-name: openfaas-templates
-description: Go OpenFaaS templates
-repositoryUrl: https://github.com/openfaas-incubator/golang-http-template#master

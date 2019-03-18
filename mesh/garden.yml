@@ -1,11 +1,13 @@
-kind: Module
-type: openfaas
-name: mesh
-lang: golang-http
-handler: ./
-build:
-  dependencies:
-  - name: openfaas-templates
-    copy:
-    - source: template
-      target: .
+module:
+  name: mesh
+  description: Generates vector and mesh.
+  type: container
+  dockerfile: Dockerfile
+  services:
+    - name: mesh
+      ports:
+        - name: http
+          containerPort: 8080
+      ingresses:
+        - path: /mesh
+          port: http

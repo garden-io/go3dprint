@@ -1,2 +1,0 @@
-language: golang-middleware-armhf
-fprocess: ./handler
