@@ -1,13 +1,11 @@
 package main
 
 import (
-	// "errors"
-	// "fmt"
 	"encoding/base64"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 
 	fgl "github.com/fogleman/fauxgl"
@@ -33,7 +31,7 @@ var (
 
 func main() {
 	http.HandleFunc("/", serve)
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -42,21 +40,11 @@ func main() {
 func serve(w http.ResponseWriter, r *http.Request) {
 	var err error
 
-	reqBody, err := ioutil.ReadAll(r.Body)
-	defer r.Body.Close()
-
-	parsed := string(reqBody)[:4]
-	parsed, err = url.QueryUnescape(parsed)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+	parsed := r.FormValue("stl")
 	filename := "mesh.stl"
-	// fileContent, err := base64.StdEncoding.DecodeString(string(req.Body))
 	fileContent, err := base64.StdEncoding.DecodeString(parsed)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprint("Base64 decode: ", err.Error()), http.StatusInternalServerError)
 		return
 	}
 
@@ -108,8 +96,6 @@ func serve(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	// payload := base64.StdEncoding.EncodeToString(data)
 
 	w.Write(data)
 

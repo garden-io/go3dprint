@@ -3,8 +3,11 @@ module:
   description: Receives SVG, returns PNG.
   type: container
   dockerfile: Dockerfile
+  hotReload:
+    sync:
+      - target: /go/src/app
   services:
-    - name: webserver
+    - name: svgtopng
       ports:
         - name: http
           containerPort: 8080

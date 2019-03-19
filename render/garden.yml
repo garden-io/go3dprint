@@ -3,6 +3,9 @@ module:
   description: Receives mesh, returns PNG.
   type: container
   dockerfile: Dockerfile
+  hotReload:
+    sync:
+      - target: /go/src/app
   services:
     - name: render
       ports:

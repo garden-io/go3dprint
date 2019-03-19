@@ -7,14 +7,21 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript">
 
+    function timer() {
+        setTimeout(function() {
+            timer()
+            getMesh();
+                    }, 3000);
+    }
+
         function getMesh() {
             $.ajax({
                 type: "GET",
-                url: "http://garden.local/function/mesh",
+                url: "http://garden.local/mesh",
                 success: function(data) {
                     var dataObj = JSON.parse(data);
                     if (dataObj.TwoD != "") {
-                        console.log("There's content on 2D!")
+                        // console.log("There's content on 2D!")
                         // canvg(document.getElementById('canvas'), "<svg width='300' height='300'></svg>")
                         // canvg(document.getElementById('canvas'), window.atob(dataObj.TwoD), {ignoreDimensions: true});
                         // $("#forminput").attr("value", data);
@@ -28,12 +35,9 @@
                     }
 
                     if (dataObj.ThreeD != "") {
-                        console.log("There's content on 3D!")
+                        // console.log("There's content on 3D!")
                         postRender(dataObj.ThreeD)
                     }
-                    setTimeout(function() {
-                        getMesh();
-                    }, 3000);
                 }
             })
         };
@@ -49,7 +53,7 @@
         };
 
         
-        getMesh()
+        timer()
 // Cache-Control: no-store
 // newImage.src = "http://localhost/image.jpg?" + new Date().getTime();
 
@@ -59,10 +63,11 @@
 	</style>
 </head>
 <body>
+
     <!-- <canvas id="canvas" width="300px" height="300px"></canvas> -->
     
     <iframe name="pic" id="pic" src="about:blank" height="300" width="300" style="border: 1px solid black;"></iframe>
-    <form action="http://garden.local/function/render" method="post" target="pic" id="formid">
+    <form action="http://garden.local/render" method="post" target="pic" id="formid">
         <input id="forminput" type="hidden" name="stl" value="bar" />
     </form>
 
@@ -70,7 +75,6 @@
     <form action="http://garden.local/svgtopng" method="post" target="svgpic" id="formidsvg">
         <input id="forminputsvg" type="hidden" name="svg" value="bar" />
     </form>
-
 
 </body>
 </html>

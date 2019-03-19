@@ -3,6 +3,9 @@ module:
   description: Generates vector and mesh.
   type: container
   dockerfile: Dockerfile
+  hotReload:
+    sync:
+      - target: /go/src/app
   services:
     - name: mesh
       ports:

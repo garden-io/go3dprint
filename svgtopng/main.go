@@ -18,13 +18,6 @@ type ConvertSVG struct {
 	SVGb64 string
 }
 
-func check(e error, w http.ResponseWriter, message string) {
-	if e != nil {
-		http.Error(w, fmt.Sprint(message, ": ", e.Error()), http.StatusInternalServerError)
-	}
-	// panic(e)
-}
-
 func serve(w http.ResponseWriter, r *http.Request) {
 	var WHSVG ConvertSVG
 	fileSVG := "file.svg"
@@ -33,6 +26,11 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := ioutil.ReadAll(r.Body)
 	defer r.Body.Close()
 
+	if len(reqBody) == 0 {
+		http.Error(w, "POST something, dummy.", http.StatusInternalServerError)
+		return
+	}
+
 	if string(reqBody)[:4] == "svg=" {
 		reqBody = reqBody[4:]
 		stringReqBody, _ := url.QueryUnescape(string(reqBody))
@@ -40,38 +38,51 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = json.Unmarshal(reqBody, &WHSVG)
-	check(err, w, "JSON unmarshal")
+	if err != nil {
+		http.Error(w, fmt.Sprint("JSON unmarshal: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	decodedSVG, err := base64.StdEncoding.DecodeString(WHSVG.SVGb64)
-	check(err, w, "B64 decode")
+	if err != nil {
+		http.Error(w, fmt.Sprint("B64 decode: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	file, err := os.Create(fileSVG)
-	check(err, w, "Create SVG file")
+	if err != nil {
+		http.Error(w, fmt.Sprint("Create SVG file: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	_, err = file.Write(decodedSVG)
-	check(err, w, "Write SVG file")
+	if err != nil {
+		http.Error(w, fmt.Sprint("Write SVG file: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	cmd := exec.Command("inkscape", "-z", "-e", filePNG, "-w", WHSVG.Width, "-h", WHSVG.Height, fileSVG, "--export-area-drawing")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	err = cmd.Run()
-	check(err, w, "Inkscape")
+	if err != nil {
+		http.Error(w, fmt.Sprint("Inkscape: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
 	resultPNG, err := ioutil.ReadFile(filePNG)
-	check(err, w, "Read PNG")
+	if err != nil {
+		http.Error(w, fmt.Sprint("Read PNG: ", err.Error()), http.StatusInternalServerError)
+		return
+	}
 
-	// encodedPNG := base64.StdEncoding.EncodeToString(resultPNG)
-	// payload, err := json.Marshal([]byte(encodedPNG))
-	// payload, err := json.Marshal([]byte(resultPNG))
-	// check(err, w, "JSON marshal")
 	w.Header().Set("content-type", "image/png")
-	// w.Write([]byte(payload))
 	w.Write([]byte(resultPNG))
 }
 
 func main() {
 	http.HandleFunc("/", serve)
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

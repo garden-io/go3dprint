@@ -1,5 +1,16 @@
-kind: Module
-type: openfaas
-name: web
-lang: go
-handler: ./
+module:
+  name: web
+  description: Front-end.
+  type: container
+  dockerfile: Dockerfile
+  hotReload:
+    sync:
+      - target: /go/src/app
+  services:
+    - name: web
+      ports:
+        - name: http
+          containerPort: 8080
+      ingresses:
+        - path: /web
+          port: http
