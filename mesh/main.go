@@ -45,7 +45,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 
 func imsotired() ([]byte, []byte) {
 	// sides := rand.Intn(6) + 3
-	sides := 4
+	sides := 3
 	polygon := sdf.Polygon2D(sdf.Nagon(sides, 70))
 	filename := "shape.svg"
 	sdf.RenderSVG(polygon, 20, filename, "fill:none;stroke:black;stroke-width:3px")

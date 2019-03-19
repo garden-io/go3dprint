@@ -1,23 +1,18 @@
 FROM golang:alpine
 
 WORKDIR /go/src/app
-COPY . .
 
-RUN apk add --no-cache git
+RUN apk add --no-cache mercurial git \
+    && go get github.com/codegangsta/gin \
+    && apk del mercurial
+
+# RUN go get -d -v ./...
 ENV GO111MODULE=on
+COPY go.mod ./
 RUN go mod vendor
 
-RUN apk add --no-cache mercurial \
-    && go get github.com/codegangsta/gin \
-    && apk del git mercurial
-
-RUN go get -d -v ./...
-RUN go install -v ./...
-
-CMD gin -p 8080 -a 8081 run main.go
-
+CMD ["gin", "-p", "8080", "-a", "8081", "run", "main.go"]
 EXPOSE 8080
 
-# CMD ["app"]
-
-# CMD ["go", "run", "main.go"]
+COPY main.go ./
+RUN go install

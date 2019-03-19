@@ -26,7 +26,8 @@ var (
 	center = fgl.V(0, -0.07, 0)                // view center position
 	up     = fgl.V(0, 1, 0)                    // up vector
 	light  = fgl.V(-0.75, 1, 0.25).Normalize() // light direction
-	color  = fgl.HexColor("#468966")           // object color
+	color  = fgl.HexColor("#ed83cc")           // object color
+	// ambientcolor = fgl.HexColor("#444444")
 )
 
 func main() {
@@ -69,7 +70,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 
 	// create a rendering context
 	context := fgl.NewContext(width*scale, height*scale)
-	context.ClearColorBufferWith(fgl.HexColor("#FFF8E3"))
+	context.ClearColorBufferWith(fgl.HexColor("#00c9b6"))
 
 	// create transformation matrix and light direction
 	aspect := float64(width) / float64(height)
@@ -78,6 +79,8 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	// use builtin phong shader
 	shader := fgl.NewPhongShader(matrix, light, eye)
 	shader.ObjectColor = color
+	// shader.AmbientColor = fgl.HexColor("#ff0000")
+	// shader.DiffuseColor = fgl.HexColor("#ff0000")
 	context.Shader = shader
 
 	// render
