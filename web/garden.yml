@@ -2,7 +2,10 @@ module:
   name: web
   description: Front-end.
   type: container
-  dockerfile: Dockerfile
+  build:
+    dependencies: [base-image]
+  buildArgs:
+    BASE_IMAGE_VERSION: ${modules.base-image.version}
   hotReload:
     sync:
       - target: /go/src/app
