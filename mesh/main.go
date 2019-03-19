@@ -2,10 +2,13 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
+
 	// "math/rand"
 	"net/http"
+	"os"
 
 	sdf "github.com/deadsy/sdfx/sdf"
 )
@@ -24,7 +27,14 @@ type ReturnObject struct {
 
 func main() {
 	http.HandleFunc("/", serve)
-	err := http.ListenAndServe(":8081", nil)
+
+	port := "8080"
+	if len(os.Args) > 2 {
+		port = os.Args[2]
+	}
+
+	log.Println(fmt.Sprintf("Listening on :%s", port))
+	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
