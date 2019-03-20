@@ -21,17 +21,15 @@
                 success: function(data) {
                     var dataObj = JSON.parse(data);
                     if (dataObj.TwoD != "") {
-                        // console.log("There's content on 2D!")
-                        // canvg(document.getElementById('canvas'), "<svg width='300' height='300'></svg>")
-                        // canvg(document.getElementById('canvas'), window.atob(dataObj.TwoD), {ignoreDimensions: true});
-                        // $("#forminput").attr("value", data);
-                        // viewBox="0 0 300 300" preserveAspectRatio="xMinYMin meet"
-                        myObj = {
-                            "Width": "300", 
-                            "Height": "300", 
-                            "SVGb64": dataObj.TwoD
-                        };
-                        postSVGtoPNG(JSON.stringify(myObj))
+                        $("#svg").html(atob(dataObj.TwoD))
+
+                        // Setting a little margin on the viewport
+                        const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4
+                        const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6
+
+                        $("#svg svg").attr("viewBox", "-1 -2 " + viewPortWidth + " " + viewPortHeight)
+                        $("#svg svg").attr("width", 300)
+                        $("#svg svg").attr("height", 300)
                     }
 
                     if (dataObj.ThreeD != "") {
@@ -60,19 +58,26 @@
 	</script>
 
     <style type="text/css">
-    .box{
-    float:left;
-    margin-right:20px;
-}
-.clear{
-    clear:both;
-}
+        .box {
+            float: left;
+            margin-right: 20px;
+            width: 300px;
+            height: 300px;
+        }
 
-iframe {
-    border: 0px solid black;
-    background-color: #00C9B6;
-}
-	</style>
+        .clear {
+            clear: both;
+        }
+
+        iframe {
+            border: 0px solid black;
+            background-color: #00C9B6;
+        }
+
+        #svg {
+            background-color: #00C9B6;
+        }
+    </style>
 </head>
 <body>
 
@@ -84,12 +89,8 @@ iframe {
     </form>
 </div>
 
-    <div class="box">
-    <iframe name="svgpic" id="svgpic" src="about:blank" height="300" width="300"></iframe>
-    <form action="http://garden.local/svgtopng" method="post" target="svgpic" id="formidsvg">
-        <input id="forminputsvg" type="hidden" name="svg" value="bar" />
-    </form>
-</div>
+    <div class="box" id="svg">
+    </div>
 
 </body>
 </html>
