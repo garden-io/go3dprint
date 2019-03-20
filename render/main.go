@@ -3,7 +3,8 @@ package main
 import (
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
+	"image"
+	"image/draw"
 	"log"
 	"net/http"
 	"os"
@@ -93,19 +94,17 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	context.DrawMesh(mesh)
 
 	// downsample image for antialiasing
-	image := context.Image()
-	image = resize.Resize(width, height, image, resize.Bilinear)
+	img := context.Image()
+	img = resize.Resize(width, height, img, resize.Bilinear)
 
-	// save image
-	output := "output.png"
-	fgl.SavePNG(output, image)
+	rect := img.Bounds()
+	rgba := image.NewRGBA(rect)
+	draw.Draw(rgba, rect, img, rect.Min, draw.Src)
 
-	data, err := ioutil.ReadFile(output)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Write(data)
-
+	w.Write(rgba.Pix)
 }

@@ -1,61 +1,78 @@
 <!doctype html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<title></title>
-	<script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript">
 
-    function timer() {
-        setTimeout(function() {
-            timer()
-            getMesh();
-                    }, 3000);
-    }
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        getMesh();
+        function timer() {
+            setTimeout(function () {
+                timer()
+                getMesh();
+            }, 1000);
+        }
+
+        const boxWidth = 300
+        const boxHeight = boxWidth
 
         function getMesh() {
             $.ajax({
                 type: "GET",
                 url: "http://garden.local/mesh",
-                success: function(data) {
+                success: function (data) {
                     var dataObj = JSON.parse(data);
                     if (dataObj.TwoD != "") {
-                        $("#svg").html(atob(dataObj.TwoD))
-
-                        // Setting a little margin on the viewport
-                        const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4
-                        const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6
-
-                        $("#svg svg").attr("viewBox", "-1 -2 " + viewPortWidth + " " + viewPortHeight)
-                        $("#svg svg").attr("width", 300)
-                        $("#svg svg").attr("height", 300)
+                        renderSvg(dataObj.TwoD)
                     }
 
                     if (dataObj.ThreeD != "") {
                         // console.log("There's content on 3D!")
-                        postRender(dataObj.ThreeD)
+                        render3dImage(dataObj.ThreeD)
                     }
                 }
             })
         };
 
-        function postSVGtoPNG(data) {
-            $("#forminputsvg").attr("value", data);
-            $("#formidsvg").submit();
+        function renderSvg(svg) {
+            $("#svg").html(atob(svg))
+
+            // Setting a little margin on the viewport
+            const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4
+            const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6
+            $("#svg svg").attr("viewBox", "-1 -2 " + viewPortWidth + " " + viewPortHeight)
+            $("#svg svg").attr("width", boxWidth)
+            $("#svg svg").attr("height", boxHeight)
         }
 
-        function postRender(data) {
-            $("#forminput").attr("value", data);
-            $("#formid").submit();
-        };
+        function render3dImage(stl) {
+            const oReq = new XMLHttpRequest();
+            oReq.open("POST", "http://garden.local/render");
+            oReq.responseType = "arraybuffer";
 
-        
+            oReq.onload = function (oEvent) {
+                const arrayBuffer = oReq.response; // Note: not oReq.responseText
+                if (arrayBuffer) {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    ctx.putImageData(
+                        new ImageData(new Uint8ClampedArray(arrayBuffer), boxWidth, boxHeight),
+                        0, 0
+                    )
+                }
+            };
+
+            const formData = new FormData();
+            formData.append("stl", stl)
+
+            oReq.send(formData)
+        }
+
         timer()
-// Cache-Control: no-store
-// newImage.src = "http://localhost/image.jpg?" + new Date().getTime();
 
-	</script>
+    </script>
 
     <style type="text/css">
         .box {
@@ -63,34 +80,20 @@
             margin-right: 20px;
             width: 300px;
             height: 300px;
+            background-color: #00C9B6;
         }
 
         .clear {
             clear: both;
         }
-
-        iframe {
-            border: 0px solid black;
-            background-color: #00C9B6;
-        }
-
-        #svg {
-            background-color: #00C9B6;
-        }
     </style>
 </head>
+
 <body>
 
-    <!-- <canvas id="canvas" width="300px" height="300px"></canvas> -->
-    <div class="box">
-    <iframe name="pic" id="pic" src="about:blank" height="300" width="300"></iframe>
-    <form action="http://garden.local/render" method="post" target="pic" id="formid">
-        <input id="forminput" type="hidden" name="stl" value="bar" />
-    </form>
-</div>
-
-    <div class="box" id="svg">
-    </div>
+    <canvas class="box" id="canvas" width="300px" height="300px"></canvas>
+    <div class="box" id="svg"></div>
 
 </body>
+
 </html>
