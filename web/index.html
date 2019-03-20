@@ -21,7 +21,7 @@
         function getMesh() {
             $.ajax({
                 type: "GET",
-                url: "http://garden.local/mesh",
+                url: "/mesh",
                 success: function (data) {
                     var dataObj = JSON.parse(data);
                     if (dataObj.TwoD != "") {
@@ -49,7 +49,7 @@
 
         function render3dImage(stl) {
             const oReq = new XMLHttpRequest();
-            oReq.open("POST", "http://garden.local/render");
+            oReq.open("POST", "/render");
             oReq.responseType = "arraybuffer";
 
             oReq.onload = function (oEvent) {
