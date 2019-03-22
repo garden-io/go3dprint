@@ -19,3 +19,5 @@ module:
       ingresses:
         - path: /mesh
           port: http
+          annotations: 
+            "nginx.ingress.kubernetes.io/proxy-body-size": "0"

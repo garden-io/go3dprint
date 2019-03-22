@@ -15,19 +15,21 @@ import (
 
 const (
 	scale  = 1   // optional supersampling
-	width  = 300 // output width in pixels
-	height = 300 // output height in pixels
+	width  = 500 // output width in pixels
+	height = 500 // output height in pixels
 	fovy   = 30  // vertical field of view in degrees
 	near   = 1   // near clipping plane
 	far    = 10  // far clipping plane
 )
 
 var (
-	eye    = fgl.V(-4, 2, 4)                   // camera position
-	center = fgl.V(0, -0.07, 0)                // view center position
-	up     = fgl.V(0, 1, 0)                    // up vector
-	light  = fgl.V(-0.75, 1, 0.25).Normalize() // light direction
-	color  = fgl.HexColor("#ed83cc")           // object color
+	eye = fgl.V(-4, 2, 4) // camera position
+	// eye    = fgl.V(5, 0, 0)     // camera position
+	center = fgl.V(0, -0.07, 0) // view center position
+	up     = fgl.V(0, 1, 0)     // up vector
+	// light  = fgl.V(-0.75, 1, 0.25).Normalize() // light direction
+	light = fgl.V(0.75, 1, 0.25).Normalize() // light direction
+	color = fgl.HexColor("#02f2b4")          // object color
 	// ambientcolor = fgl.HexColor("#444444")
 )
 
@@ -77,7 +79,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 
 	// create a rendering context
 	context := fgl.NewContext(width*scale, height*scale)
-	context.ClearColorBufferWith(fgl.HexColor("#00c9b6"))
+	context.ClearColorBufferWith(fgl.HexColor("#000"))
 
 	// create transformation matrix and light direction
 	aspect := float64(width) / float64(height)
