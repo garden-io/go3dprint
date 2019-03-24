@@ -4,11 +4,13 @@ import (
 	"encoding/base64"
 	"fmt"
 	"image"
+	ic "image/color"
 	"image/draw"
 	"log"
 	"net/http"
 	"os"
 
+	"github.com/disintegration/imaging"
 	fgl "github.com/fogleman/fauxgl"
 	"github.com/nfnt/resize"
 )
@@ -23,13 +25,11 @@ const (
 )
 
 var (
-	eye = fgl.V(-4, 2, 4) // camera position
-	// eye    = fgl.V(5, 0, 0)     // camera position
-	center = fgl.V(0, -0.07, 0) // view center position
-	up     = fgl.V(0, 1, 0)     // up vector
-	// light  = fgl.V(-0.75, 1, 0.25).Normalize() // light direction
-	light = fgl.V(0.75, 1, 0.25).Normalize() // light direction
-	color = fgl.HexColor("#02f2b4")          // object color
+	eye    = fgl.V(5, 0, 0)                // camera position
+	center = fgl.V(0, -0.07, 0)            // view center position
+	up     = fgl.V(0, 1, 0)                // up vector
+	light  = fgl.V(1, 0, -0.7).Normalize() // light direction
+	color  = fgl.HexColor("#02f2b4")       // object color
 	// ambientcolor = fgl.HexColor("#444444")
 )
 
@@ -49,6 +49,16 @@ func main() {
 
 func serve(w http.ResponseWriter, r *http.Request) {
 	var err error
+
+	// EMPTY
+	// contextE := fgl.NewContext(width*scale, height*scale)
+	// imgE := contextE.Image()
+	// rectE := imgE.Bounds()
+	// rgbaE := image.NewRGBA(rectE)
+	// draw.Draw(rgbaE, rectE, imgE, rectE.Min, draw.Src)
+	// w.Write(rgbaE.Pix)
+	// return
+	// EMPTY
 
 	parsed := r.FormValue("stl")
 	filename := "mesh.stl"
@@ -98,6 +108,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	// downsample image for antialiasing
 	img := context.Image()
 	img = resize.Resize(width, height, img, resize.Bilinear)
+	img = imaging.Rotate(img, 90, ic.RGBA{0, 0, 0, 1})
 
 	rect := img.Bounds()
 	rgba := image.NewRGBA(rect)

@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	// "math"
+	"math"
 	// "math/rand"
 	"net/http"
 	"os"
 
-	sdf "github.com/deadsy/sdfx/sdf"
+	s "github.com/deadsy/sdfx/sdf"
 )
 
 type ConvertSVG struct {
@@ -42,131 +42,125 @@ func main() {
 
 func serve(w http.ResponseWriter, r *http.Request) {
 	var err error
+	var stlFile []byte
+	fileSVG := "shape.svg"
 
-	svg, stl := imsotired()
-	takeThis, err := json.Marshal(ReturnObject{TwoD: svg, ThreeD: stl})
+	svg, _ := magic()
+
+	// 3D
+	fileSTL := "mesh.stl"
+	svg, stl := magic()
+	s.RenderSTL(stl, 50, fileSTL)
+	stlFile, err = ioutil.ReadFile(fileSTL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	// 3D
+
+	s.RenderSVG(svg, 60, fileSVG, "fill:none;stroke:#02f2b4;stroke-width:2px")
+
+	svgFile, err := ioutil.ReadFile(fileSVG)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	svgString := string(svgFile[57:])
+	svgFile = []byte(svgString)
+
+	payload, err := json.Marshal(ReturnObject{TwoD: svgFile, ThreeD: stlFile})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	w.Write(takeThis)
+	w.Write(payload)
 }
 
-func imsotired() ([]byte, []byte) {
-	fileSVG := "shape.svg"
-	fileSTL := "mesh.stl"
+func magic() (s.SDF2, s.SDF3) {
+	var output2d s.SDF2
+	var output3d s.SDF3
 
-	// 1
-	// output2d := sdf.Circle2D(70)
-	// sdf.RenderSVG(output2d, 50, fileSVG, "fill:none;stroke:#02f2b4;stroke-width:3px")
-	// output3d := sdf.Extrude3D(output2d, 150)
-	// 1
+	//
+	// #######                   ###
+	// #        #    #  #    #   ###
+	// #        #    #  ##   #   ###
+	// #####    #    #  # #  #    #
+	// #        #    #  #  # #
+	// #        #    #  #   ##   ###
+	// #         ####   #    #   ###
+	//
 
-	// 2
-	// output2d := sdf.Box2D(sdf.V2{60.0, 290.0}, 0.0)
-	// sdf.RenderSVG(output2d, 50, fileSVG, "fill:none;stroke:#02f2b4;stroke-width:3px")
-	// output3d := sdf.Extrude3D(output2d, 150)
-	// 2
+	circle := s.Circle2D(20)
 
-	// 3
-	circle := sdf.Circle2D(70)
-	square := sdf.Box2D(sdf.V2{60.0, 290.0}, 20.0)
-	output2d := sdf.Union2D(circle, square)
-	sdf.RenderSVG(output2d, 50, fileSVG, "fill:none;stroke:#02f2b4;stroke-width:3px")
-	output3d := sdf.Extrude3D(output2d, 150)
-	// 3
+	coin := s.Extrude3D(circle, 10)
 
-	// GOPHER (WIP!)
-	// b := sdf.NewBezier()
-	// b.Add(0.0, 0.0).HandleFwd(sdf.DtoR(0), 150.0)
-	// b.Add(50.0, 120.0).Mid()
-	// b.Add(0.0, 300.0).HandleRev(sdf.DtoR(0), 150.0)
-	// b.Close()
-	// p := b.Polygon()
-	// s0 := sdf.Polygon2D(p.Vertices())
-	// s1 := sdf.Revolve3D(s0)
+	square := s.Box2D(s.V2{10, 80}, 0)
 
-	// c := sdf.NewBezier()
-	// c.Add(0.0, 0.0).HandleFwd(sdf.DtoR(0), 50.0)
-	// c.Add(50.0, 50.0).Mid()
-	// c.Add(0.0, 100.0).HandleRev(sdf.DtoR(0), 50.0)
-	// c.Close()
-	// s2d := sdf.Polygon2D(c.Polygon().Vertices())
-	// s2 := sdf.Revolve3D(s2d)
-	// s2 = sdf.Transform3D(s2, sdf.Translate3d(sdf.V3{50, 40, 20}))
+	cube := s.Extrude3D(square, 30)
+	cube = s.Transform3D(cube, s.Translate3d(s.V3{90, 0, 95}))
 
-	// d := sdf.NewBezier()
-	// d.Add(0.0, 0.0).HandleFwd(sdf.DtoR(0), 50.0)
-	// d.Add(50.0, 50.0).Mid()
-	// d.Add(0.0, 100.0).HandleRev(sdf.DtoR(0), 50.0)
-	// d.Close()
-	// s3d := sdf.Polygon2D(d.Polygon().Vertices())
-	// s3 := sdf.Revolve3D(s3d)
-	// s3 = sdf.Transform3D(s3, sdf.Translate3d(sdf.V3{50, -40, 20}))
+	output2d = s.Union2D(circle, square)
+	output3d = s.Union3D(coin, cube)
 
-	// e := sdf.NewBezier()
-	// e.Add(0.0, 0.0).HandleFwd(sdf.DtoR(0), 50.0)
-	// e.Add(30.0, 30.0).Mid()
-	// e.Add(0.0, 60.0).HandleRev(sdf.DtoR(0), 50.0)
-	// e.Close()
-	// s4d := sdf.Polygon2D(e.Polygon().Vertices())
-	// s4 := sdf.Revolve3D(s4d)
-	// s4 = sdf.Transform3D(s4, sdf.Translate3d(sdf.V3{70, 0, 100}))
-
-	// output2d := sdf.Union2D(s0, s2d)
-	// sdf.RenderSVG(output2d, 50, fileSVG, "fill:none;stroke:white;stroke-width:3px")
-	// output3d := sdf.Union3D(s1) // , s2, s3, s4)
-
-	// sdf.RenderSTL(output3d, 50, fileSTL)
-	// GOPHER
-
-	// CHEAT!!
-
-	// DILATOR
-	// b := sdf.NewBezier()
-	// fix1 := 0.2
-	// fix2 := 7.0
-	// fix3 := 0.3
-	// // fix1 := 1.0
-	// // fix2 := 1.0
-	// // fix3 := 1.0
-	// steps := 50.0
-	// length := 200.0
-	// radius := 35.0 / 2
-	// stepSize := radius / steps
-	// y := 0.0
-	// for i := 1.00; i < radius; i += stepSize {
-	// 	x := i
-	// 	// y := x*x + x/math.Abs(radius-x)
-	// 	y = (x*x)*fix3 + (x / math.Abs(radius-x) * fix2)
-	// 	y = y * fix1
-	// 	if y > length {
-	// 		y = length
-	// 	}
-	// 	// fmt.Println(x, y)
-	// 	b.Add(x, y)
-	// }
-	// b.Add(0.0, y)
-	// b.Close()
-	// p := b.Polygon()
-	// output2d := sdf.Polygon2D(p.Vertices())
-	// // output2d = sdf.Transform2D(output2d, sdf.Rotate2d(sdf.DtoR(45)))
-	// sdf.RenderSVG(output2d, 50, fileSVG, "fill:none;stroke:white;stroke-width:3px")
-	// output3d := sdf.Revolve3D(output2d)
-	// DILATOR
-
-	svg, err := ioutil.ReadFile(fileSVG)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	svgString := string(svg[57:])
-	svg = []byte(svgString)
-
-	sdf.RenderSTL(output3d, 60, fileSTL)
-	stl, err := ioutil.ReadFile(fileSTL)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	return svg, stl
+	return output2d, output3d
 }
+
+// CHEAT!
+// coin = s.Transform3D(coin, s.RotateY(s.DtoR(90)))
+// coin = s.Transform3D(coin, s.Translate3d(s.V3{30, 70, 30}))
+// coin2 := s.Extrude3D(circle, 10)
+// coin2 = s.Transform3D(coin2, s.RotateY(s.DtoR(90)))
+// coin2 = s.Transform3D(coin2, s.Translate3d(s.V3{30, -70, 30}))
+// output3d = s.Union3D(cube, coin, coin2)
+
+// CHEAT!
+// b2d := s.Polygon2D(b.Polygon().Vertices())
+
+func bezierBlobs(mX, mY, fY, h, tX, tY, tZ float64) s.SDF3 {
+	b := s.NewBezier()
+	b.Add(0, 0).HandleFwd(s.DtoR(0), h)
+	b.Add(mX, mY).Mid()
+	b.Add(0, fY).HandleRev(s.DtoR(0), h)
+	b.Close()
+	output2d := s.Polygon2D(b.Polygon().Vertices())
+	output3d := s.Revolve3D(output2d)
+	output3d = s.Transform3D(output3d, s.Translate3d(s.V3{tX, tY, tZ}))
+	return output3d
+}
+
+// CHEAT!
+// (25, 25, 50, 37, 65, 32, 30)
+// (25, 25, 50, 37, 65, -32, 30)
+// (13, 26, 26, 30, 90, 0, 70)
+// (10, 10, 20, 10, 86, -40, 37)
+// (10, 10, 20, 10, 86, 40, 43)
+// (5, 5, 13, 13, 105, 0, 70)
+
+func dilator() (s.SDF2, s.SDF3) {
+	d := s.NewBezier()
+	length := 200.0
+	radius := 34.0 / 2
+	steps := 50.0
+	step := radius / steps
+	for x := 1.0; x < radius; x += step {
+
+		p1 := (x * x) * 0.3
+		p2 := (x / math.Abs(radius-x)) * 7
+		y := (p1 + p2) * 0.2
+		// y := 0.0 // CRAZY MATH!
+
+		if y > length {
+			y = length
+		}
+		d.Add(x, -y)
+	}
+	d.Add(0, -length)
+	d.Close()
+	output2d := s.Polygon2D(d.Polygon().Vertices())
+	output3d := s.Revolve3D(output2d)
+	return output2d, output3d
+}
+
+// ONE MORE THING!
+// gopher = s.ScaleUniform3D(gopher, 0.1925)
+// gopher = s.Transform3D(gopher, s.Translate3d(s.V3{0, 0, -235}))
+// output3d = s.Union3D(gopher, output3d)
