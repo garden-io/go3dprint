@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"io/ioutil"
 	"log"
 	"net/http"
+	// "os"
 	"path/filepath"
 )
 
@@ -13,9 +13,6 @@ func main() {
 	http.HandleFunc("/", serve)
 
 	port := "8080"
-	if len(os.Args) > 2 {
-			port = os.Args[2]
-	}
 
 	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
 	if err != nil {

@@ -11,8 +11,6 @@ module:
       - target: /go/src/app
   services:
     - name: render
-      hotReloadArgs:
-        ["gin", "-p", "8080", "-a", "8081", "run", "main.go", "8081"]
       ports:
         - name: http
           containerPort: 8080

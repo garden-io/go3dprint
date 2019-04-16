@@ -11,8 +11,6 @@ module:
       - target: /go/src/app
   services:
     - name: mesh
-      hotReloadArgs:
-        ["gin", "-p", "8080", "-a", "8081", "run", "main.go", "8081"]
       ports:
         - name: http
           containerPort: 8080
@@ -21,7 +19,3 @@ module:
           port: http
           annotations: 
             "nginx.ingress.kubernetes.io/proxy-body-size": "0"
-      # healthCheck:
-      #   httpGet:
-      #     path: /mesh
-      #     port: http

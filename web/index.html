@@ -28,7 +28,6 @@
             }
 
             if (dataObj.ThreeD != "") {
-              // console.log("There's content on 3D!")
               render3dImage(dataObj.ThreeD);
               download3D = download3D.bind({filename: 'rendered_3d_image.stl', data: dataObj.ThreeD})
             }
