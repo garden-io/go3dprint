@@ -3,3 +3,4 @@
 # rm -f ./app && echo "Removing binary..."
 echo "Re-building & restarting."
 go build . && ./app
+echo ""

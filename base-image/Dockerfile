@@ -9,7 +9,7 @@ ENTRYPOINT ["/bin/sh", "-c"]
 CMD ["./app"]
 EXPOSE 8080
 
-ONBUILD COPY hotreload.sh ./
+COPY hotreload.sh ./
 
 ONBUILD COPY go.mod ./
 ONBUILD RUN go mod vendor

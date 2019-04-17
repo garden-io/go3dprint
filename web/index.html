@@ -1,191 +1,220 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title></title>
-    <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript">
-      getMesh();
-      function timer() {
-        setTimeout(function () {
-            timer()
-            getMesh();
-        }, 1000);
-      }
 
-      const boxWidth = 500;
-      const boxHeight = boxWidth;
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    getMesh();
+    function timer() {
+      setTimeout(function () {
+        timer()
+        getMesh();
+      }, 3000);
+    }
 
-      function getMesh() {
-        $.ajax({
-          type: "GET",
-          url: "/mesh",
-          success: function(data) {
-            var dataObj = JSON.parse(data);
-            if (dataObj.TwoD != "") {
-              renderSvg(dataObj.TwoD);
-            }
+    const boxWidth = 500;
+    const boxHeight = boxWidth;
 
-            if (dataObj.ThreeD != "") {
-              render3dImage(dataObj.ThreeD);
-              download3D = download3D.bind({filename: 'rendered_3d_image.stl', data: dataObj.ThreeD})
-            }
+    function getMesh() {
+      $.ajax({
+        type: "GET",
+        url: "/mesh",
+        success: function (data) {
+          var dataObj = JSON.parse(data);
+          if (dataObj.TwoD != "") {
+            renderSvg(dataObj.TwoD);
           }
-        });
-      }
 
-      function download3D() {
-        var element = document.createElement("a");
-        element.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," + encodeURIComponent(window.atob(this.data))
-        );
-        element.setAttribute("download", this.filename);
-
-        element.style.display = "none";
-        document.body.appendChild(element);
-
-        element.click();
-
-        document.body.removeChild(element);
-      }
-
-      function renderSvg(svg) {
-        $("#svg").html(atob(svg));
-
-        // Setting a little margin on the viewport
-        const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4;
-        const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6;
-        $("#svg svg").attr(
-          "viewBox",
-          "-1 -2 " + viewPortWidth + " " + viewPortHeight
-        );
-        $("#svg svg").attr("width", boxWidth);
-        $("#svg svg").attr("height", boxHeight);
-      }
-
-      function render3dImage(stl) {
-        const oReq = new XMLHttpRequest();
-        oReq.open("POST", "/render");
-        oReq.responseType = "arraybuffer";
-
-        oReq.onload = function(oEvent) {
-          const arrayBuffer = oReq.response; // Note: not oReq.responseText
-          if (arrayBuffer) {
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.putImageData(
-              new ImageData(
-                new Uint8ClampedArray(arrayBuffer),
-                boxWidth,
-                boxHeight
-              ),
-              0,
-              0
-            );
+          if (dataObj.ThreeD != "") {
+            render3dImage(dataObj.ThreeD);
+            download3D = download3D.bind({ filename: 'rendered_3d_image.stl', data: dataObj.ThreeD })
           }
-        };
+        }
+      });
+    }
 
-        const formData = new FormData();
-        formData.append("stl", stl);
+    function download3D() {
+      var element = document.createElement("a");
+      element.setAttribute(
+        "href",
+        "data:text/plain;charset=utf-8," + encodeURIComponent(window.atob(this.data))
+      );
+      element.setAttribute("download", this.filename);
 
-        oReq.send(formData);
-      }
+      element.style.display = "none";
+      document.body.appendChild(element);
 
-      timer();
-    </script>
-<link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,500,700" rel="stylesheet">
-<style type="text/css">
-.grid-container { width: 100%; position: absolute; bottom: 0; left: 0; }
+      element.click();
 
-.grid-container:after { 
-  -webkit-mask-image: -webkit-gradient(linear, left 90%, left top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-  mask-image: gradient(linear, left 90%, left top, from(rgba(0,0,0,1)), to(rgba(0,0,0,0)));
-	transform: perspective(200px) rotateX(14deg) scale(2,1) translateZ(0);
-  content: ""; display: block; position: absolute; bottom: 0; left: 0; right: 0; width: 100%; height: 100vh;
-  padding: 1px; 
-  -webkit-background-clip: content-box; 
-  -webkit-backface-visibility: hidden;
-  outline: 1px solid transparent;
-  transform-origin: bottom center;
-  will-change: transform; 
-}
+      document.body.removeChild(element);
+    }
 
-.grid-container:after {
-  background-position: center bottom;
-  background-size: 40px 40px;
-  background-image: 
-  linear-gradient(to right, green 2px, transparent 2px), 
-  linear-gradient(to bottom, green 1px, transparent 2px);
-}
-      body {
-        background: black;
-        color: white;
-        text-align: center;
-        font-family: "Raleway";
-      }
-      h2 {
-        font-size: 4rem;
-        color: #ed83cc;
-          z-index: 1;
-    position: relative;
-      }
+    function renderSvg(svg) {
+      $("#svg").html(atob(svg));
 
-      .container {
-        display: flex;
-        justify-content: space-around;
-      }
-      .container__three-d {
-      }
+      // Setting a little margin on the viewport
+      const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4;
+      const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6;
+      $("#svg svg").attr(
+        "viewBox",
+        "-1 -2 " + viewPortWidth + " " + viewPortHeight
+      );
+      $("#svg svg").attr("width", boxWidth);
+      $("#svg svg").attr("height", boxHeight);
+    }
 
-      .container__two-d {
-        margin-right: 1rem;
-      }
-      .box {
-        background-color: transparent;
-        box-shadow: 0 0 15px 0 #fff, /* inner white */ 0 0 310px 0px #02f2b4, /* middle magenta */ 0 0 1px 0px #02f2b4;
-                padding: 3rem;
-      }
+    function render3dImage(stl) {
+      const oReq = new XMLHttpRequest();
+      oReq.open("POST", "/render");
+      oReq.responseType = "arraybuffer";
 
-.download{
-    display: flex;
-    align-items: center;
-    font-size: 2rem;
-    justify-content: center;
-    padding-top: 1rem;
-    cursor: pointer;
-    color: #ed83cc;
-    z-index: 1;
-    position: relative;
-}
-.download__icon{
-    width: 3rem;
-    height: 3rem;
-    padding-left: 1rem;
-}
-    </style>
-  </head>
+      oReq.onload = function (oEvent) {
+        const arrayBuffer = oReq.response; // Note: not oReq.responseText
+        if (arrayBuffer) {
+          const canvas = document.getElementById("canvas");
+          const ctx = canvas.getContext("2d");
+          ctx.putImageData(
+            new ImageData(
+              new Uint8ClampedArray(arrayBuffer),
+              boxWidth,
+              boxHeight
+            ),
+            0,
+            0
+          );
+        }
+      };
 
-  <body>
-    <div class="grid-container"></div>
-    <div class="container">
-        <div class="container__two-d">
-            <h2>2D</h2>
+      const formData = new FormData();
+      formData.append("stl", stl);
 
-            <div class="box" id="svg"></div>
-        </div>
-        <div class="container__three-d">
-            <h2>3D</h2>
-            <canvas class="box" id="canvas" width="500px" height="500px"></canvas>
-            <div class="download" onclick="download3D()"> download
-                    <svg class="download__icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 433.5 433.5" style="enable-background:new 0 0 433.5 433.5;" xml:space="preserve"><g><g>
-                            <g id="file-download">
-                                <path d="M395.25,153h-102V0h-153v153h-102l178.5,178.5L395.25,153z M38.25,382.5v51h357v-51H38.25z" data-original="#000000" class="active-path" data-old_color="#ed83cc" fill="#ed83cc"/>
-                            </g>
-                        </g></g> </svg>
-            </span>
-        </div>
+      oReq.send(formData);
+    }
+
+    timer();
+  </script>
+  <link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,500,700" rel="stylesheet">
+  <style type="text/css">
+    .grid-container {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+    }
+
+    .grid-container:after {
+      -webkit-mask-image: -webkit-gradient(linear, left 90%, left top, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+      mask-image: gradient(linear, left 90%, left top, from(rgba(0, 0, 0, 1)), to(rgba(0, 0, 0, 0)));
+      transform: perspective(200px) rotateX(14deg) scale(2, 1) translateZ(0);
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: 100vh;
+      padding: 1px;
+      -webkit-background-clip: content-box;
+      -webkit-backface-visibility: hidden;
+      outline: 1px solid transparent;
+      transform-origin: bottom center;
+      will-change: transform;
+    }
+
+    .grid-container:after {
+      background-position: center bottom;
+      background-size: 40px 40px;
+      background-image:
+        linear-gradient(to right, green 2px, transparent 2px),
+        linear-gradient(to bottom, green 1px, transparent 2px);
+    }
+
+    body {
+      background: black;
+      color: white;
+      text-align: center;
+      font-family: "Raleway";
+    }
+
+    h2 {
+      font-size: 4rem;
+      color: #ed83cc;
+      z-index: 1;
+      position: relative;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .container__three-d {}
+
+    .container__two-d {
+      margin-right: 1rem;
+    }
+
+    .box {
+      background-color: transparent;
+      box-shadow: 0 0 15px 0 #fff,
+        /* inner white */
+        0 0 310px 0px #02f2b4,
+        /* middle magenta */
+        0 0 1px 0px #02f2b4;
+      padding: 3rem;
+    }
+
+    .download {
+      display: flex;
+      align-items: center;
+      font-size: 2rem;
+      justify-content: center;
+      padding-top: 1rem;
+      cursor: pointer;
+      color: #ed83cc;
+      z-index: 1;
+      position: relative;
+    }
+
+    .download__icon {
+      width: 3rem;
+      height: 3rem;
+      padding-left: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grid-container"></div>
+  <div class="container">
+    <div class="container__two-d">
+      <h2>2D</h2>
+
+      <div class="box" id="svg"></div>
     </div>
-  </body>
+    <div class="container__three-d">
+      <h2>3D</h2>
+      <canvas class="box" id="canvas" width="500px" height="500px"></canvas>
+      <div class="download" onclick="download3D()"> download
+        <svg class="download__icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+          version="1.1" id="Capa_1" x="0px" y="0px" width="512px" height="512px" viewBox="0 0 433.5 433.5"
+          style="enable-background:new 0 0 433.5 433.5;" xml:space="preserve">
+          <g>
+            <g>
+              <g id="file-download">
+                <path d="M395.25,153h-102V0h-153v153h-102l178.5,178.5L395.25,153z M38.25,382.5v51h357v-51H38.25z"
+                  data-original="#000000" class="active-path" data-old_color="#ed83cc" fill="#ed83cc" />
+              </g>
+            </g>
+          </g>
+        </svg>
+        </span>
+      </div>
+    </div>
+</body>
+
 </html>

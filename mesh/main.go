@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math"
+
 	// "math/rand"
 	"net/http"
 
@@ -47,7 +48,7 @@ func serve(w http.ResponseWriter, r *http.Request) {
 	// 3D
 	fileSTL := "mesh.stl"
 	svg, stl := magic()
-	s.RenderSTL(stl, 200, fileSTL)
+	s.RenderSTL(stl, 50, fileSTL)
 	stlFile, err = ioutil.ReadFile(fileSTL)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -89,7 +90,7 @@ func magic() (s.SDF2, s.SDF3) {
 	//
 
 	// 1. Start here
-	circle := s.Circle2D(20)
+	circle := s.Circle2D(90)
 	coin := s.Extrude3D(circle, 10)
 	output2d, output3d = circle, coin
 
