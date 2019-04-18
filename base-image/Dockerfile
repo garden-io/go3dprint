@@ -10,7 +10,7 @@ ENV GO111MODULE=on
 CMD ["./app"]
 EXPOSE 8080
 
-ONBUILD COPY go.mod go.sum ./
+ONBUILD COPY go.mod ./
 ONBUILD RUN go mod vendor
 
 ONBUILD COPY *.go ./
