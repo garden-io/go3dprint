@@ -1,4 +1,5 @@
 ARG BASE_IMAGE_VERSION
 FROM base-image:${BASE_IMAGE_VERSION}
 
-CMD ["./mesh"]
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["./app"]

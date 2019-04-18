@@ -1,1 +1,1 @@
-module web
+module app
