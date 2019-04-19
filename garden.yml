@@ -1,7 +1,7 @@
-project:
-  name: go3dprint
-  environments:
-    - name: local
-      providers:
-        - name: local-kubernetes
-          defaultHostname: garden.local
+kind: Project
+name: go3dprint
+environments:
+  - name: local
+    providers:
+      - name: local-kubernetes
+        defaultHostname: garden.local
