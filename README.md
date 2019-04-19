@@ -4,7 +4,7 @@
   <img src="img/frontend.png" width="70%">
 </p>
 
-`Go 3D Print` is a demo project showing the basics of creating and rendering 3D mesh with Go. It uses the `sdfx` and `fauxgl` libraries.
+`Go 3D Print` is a needlessly distributed phallic object generator. It's a demo project showing the basics of creating and rendering 3D mesh with Go. It uses the `sdfx` and `fauxgl` libraries.
 
 This project is split into three microservices: `mesh`, `render`, and `web`.
 
