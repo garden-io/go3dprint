@@ -1,5 +1,6 @@
 ARG BASE_IMAGE_VERSION
 FROM base-image:${BASE_IMAGE_VERSION}
 
-CMD ["./web"]
+ENTRYPOINT ["/bin/sh", "-c"]
+CMD ["./app"]
 COPY index.html ./

@@ -6,96 +6,107 @@
     <script src="https://cdn.jsdelivr.net/npm/canvg/dist/browser/canvg.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript">
-      getMesh();
-      function timer() {
-        setTimeout(function () {
-            timer()
-            getMesh();
-        }, 1000);
-      }
 
-      const boxWidth = 500;
-      const boxHeight = boxWidth;
+// https://github.com/joewalnes/reconnecting-websocket
+!function(a,b){"function"==typeof define&&define.amd?define([],b):"undefined"!=typeof module&&module.exports?module.exports=b():a.ReconnectingWebSocket=b()}(this,function(){function a(b,c,d){function l(a,b){var c=document.createEvent("CustomEvent");return c.initCustomEvent(a,!1,!1,b),c}var e={debug:!1,automaticOpen:!0,reconnectInterval:1e3,maxReconnectInterval:3e4,reconnectDecay:1.5,timeoutInterval:2e3};d||(d={});for(var f in e)this[f]="undefined"!=typeof d[f]?d[f]:e[f];this.url=b,this.reconnectAttempts=0,this.readyState=WebSocket.CONNECTING,this.protocol=null;var h,g=this,i=!1,j=!1,k=document.createElement("div");k.addEventListener("open",function(a){g.onopen(a)}),k.addEventListener("close",function(a){g.onclose(a)}),k.addEventListener("connecting",function(a){g.onconnecting(a)}),k.addEventListener("message",function(a){g.onmessage(a)}),k.addEventListener("error",function(a){g.onerror(a)}),this.addEventListener=k.addEventListener.bind(k),this.removeEventListener=k.removeEventListener.bind(k),this.dispatchEvent=k.dispatchEvent.bind(k),this.open=function(b){h=new WebSocket(g.url,c||[]),b||k.dispatchEvent(l("connecting")),(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","attempt-connect",g.url);var d=h,e=setTimeout(function(){(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","connection-timeout",g.url),j=!0,d.close(),j=!1},g.timeoutInterval);h.onopen=function(){clearTimeout(e),(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","onopen",g.url),g.protocol=h.protocol,g.readyState=WebSocket.OPEN,g.reconnectAttempts=0;var d=l("open");d.isReconnect=b,b=!1,k.dispatchEvent(d)},h.onclose=function(c){if(clearTimeout(e),h=null,i)g.readyState=WebSocket.CLOSED,k.dispatchEvent(l("close"));else{g.readyState=WebSocket.CONNECTING;var d=l("connecting");d.code=c.code,d.reason=c.reason,d.wasClean=c.wasClean,k.dispatchEvent(d),b||j||((g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","onclose",g.url),k.dispatchEvent(l("close")));var e=g.reconnectInterval*Math.pow(g.reconnectDecay,g.reconnectAttempts);setTimeout(function(){g.reconnectAttempts++,g.open(!0)},e>g.maxReconnectInterval?g.maxReconnectInterval:e)}},h.onmessage=function(b){(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","onmessage",g.url,b.data);var c=l("message");c.data=b.data,k.dispatchEvent(c)},h.onerror=function(b){(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","onerror",g.url,b),k.dispatchEvent(l("error"))}},1==this.automaticOpen&&this.open(!1),this.send=function(b){if(h)return(g.debug||a.debugAll)&&console.debug("ReconnectingWebSocket","send",g.url,b),h.send(b);throw"INVALID_STATE_ERR : Pausing to reconnect websocket"},this.close=function(a,b){"undefined"==typeof a&&(a=1e3),i=!0,h&&h.close(a,b)},this.refresh=function(){h&&h.close()}}return a.prototype.onopen=function(){},a.prototype.onclose=function(){},a.prototype.onconnecting=function(){},a.prototype.onmessage=function(){},a.prototype.onerror=function(){},a.debugAll=!1,a.CONNECTING=WebSocket.CONNECTING,a.OPEN=WebSocket.OPEN,a.CLOSING=WebSocket.CLOSING,a.CLOSED=WebSocket.CLOSED,a});
 
-      function getMesh() {
-        $.ajax({
-          type: "GET",
-          url: "/mesh",
-          success: function(data) {
-            var dataObj = JSON.parse(data);
-            if (dataObj.TwoD != "") {
-              renderSvg(dataObj.TwoD);
-            }
+function timer() {
+    setTimeout(function () {
+        timer()
+        socket.send("ping")
+    }, 10000);
+  }
 
-            if (dataObj.ThreeD != "") {
-              // console.log("There's content on 3D!")
-              render3dImage(dataObj.ThreeD);
-              download3D = download3D.bind({filename: 'rendered_3d_image.stl', data: dataObj.ThreeD})
-            }
-          }
-        });
-      }
+function updateImages(data) {
+  var dataObj = JSON.parse(data);
+  if (dataObj.TwoD != "") {
+    renderSvg(dataObj.TwoD);
+  }
+  if (dataObj.ThreeD != "") {
+    render3dImage(dataObj.ThreeD);
+    download3D = download3D.bind({filename: 'rendered_3d_image.stl', data: dataObj.ThreeD})
+  }
+}
 
-      function download3D() {
-        var element = document.createElement("a");
-        element.setAttribute(
-          "href",
-          "data:text/plain;charset=utf-8," + encodeURIComponent(window.atob(this.data))
-        );
-        element.setAttribute("download", this.filename);
+function download3D() {
+  var element = document.createElement("a");
+  element.setAttribute(
+    "href",
+    "data:text/plain;charset=utf-8," + encodeURIComponent(window.atob(this.data))
+  );
+  element.setAttribute("download", this.filename);
+  element.style.display = "none";
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
 
-        element.style.display = "none";
-        document.body.appendChild(element);
+function renderSvg(svg) {
+  $("#svg").html(atob(svg));
+  // Setting a little margin on the viewport
+  const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4;
+  const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6;
+  $("#svg svg").attr(
+    "viewBox",
+    "-1 -2 " + viewPortWidth + " " + viewPortHeight
+  );
+  $("#svg svg").attr("width", boxWidth);
+  $("#svg svg").attr("height", boxHeight);
+}
 
-        element.click();
+function render3dImage(stl) {
+  const oReq = new XMLHttpRequest();
+  oReq.open("POST", "/render");
+  oReq.responseType = "arraybuffer";
+  oReq.onload = function(oEvent) {
+    const arrayBuffer = oReq.response; // Note: not oReq.responseText
+    if (arrayBuffer) {
+      const canvas = document.getElementById("canvas");
+      const ctx = canvas.getContext("2d");
+      ctx.putImageData(
+        new ImageData(
+          new Uint8ClampedArray(arrayBuffer),
+          boxWidth,
+          boxHeight
+        ),
+        0,
+        0
+      );
+    }
+  };
+  const formData = new FormData();
+  formData.append("stl", stl);
+  oReq.send(formData);
+}
+const boxWidth = 500;
+const boxHeight = boxWidth;
 
-        document.body.removeChild(element);
-      }
+var socket = new ReconnectingWebSocket("ws://garden.local/mesh");
 
-      function renderSvg(svg) {
-        $("#svg").html(atob(svg));
+socket.onopen = function () {
+  var today = new Date();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  console.log("Status: Connected " + time + "\n")
+  timer()
+};
 
-        // Setting a little margin on the viewport
-        const viewPortWidth = parseInt($("#svg svg").attr("width"), 10) + 4;
-        const viewPortHeight = parseInt($("#svg svg").attr("height"), 10) + 6;
-        $("#svg svg").attr(
-          "viewBox",
-          "-1 -2 " + viewPortWidth + " " + viewPortHeight
-        );
-        $("#svg svg").attr("width", boxWidth);
-        $("#svg svg").attr("height", boxHeight);
-      }
+socket.onclose = function () {
+  console.log("Status: Disconnected\n")
+};
 
-      function render3dImage(stl) {
-        const oReq = new XMLHttpRequest();
-        oReq.open("POST", "/render");
-        oReq.responseType = "arraybuffer";
+socket.onerror = function (e) {
+  console.log(e)
+}
 
-        oReq.onload = function(oEvent) {
-          const arrayBuffer = oReq.response; // Note: not oReq.responseText
-          if (arrayBuffer) {
-            const canvas = document.getElementById("canvas");
-            const ctx = canvas.getContext("2d");
-            ctx.putImageData(
-              new ImageData(
-                new Uint8ClampedArray(arrayBuffer),
-                boxWidth,
-                boxHeight
-              ),
-              0,
-              0
-            );
-          }
-        };
+socket.onmessage = function (e) {
+  if (e.data == "pong") {
+    console.log("Server: " + e.data + "\n")
+  } else {
+    updateImages(e.data)
+  }
+};
 
-        const formData = new FormData();
-        formData.append("stl", stl);
-
-        oReq.send(formData);
-      }
-
-      timer();
-    </script>
+</script>
 <link href="https://fonts.googleapis.com/css?family=Raleway:400,400i,500,700" rel="stylesheet">
 <style type="text/css">
 .grid-container { width: 100%; position: absolute; bottom: 0; left: 0; }

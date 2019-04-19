@@ -12,7 +12,7 @@ module:
   services:
     - name: render
       hotReloadArgs:
-        ["gin", "-p", "8080", "-a", "8081", "run", "main.go", "8081"]
+        ["find . | entr -r ./hotreload.sh"]
       ports:
         - name: http
           containerPort: 8080
