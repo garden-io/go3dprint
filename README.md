@@ -38,7 +38,7 @@ This project is split into three microservices: `mesh`, `render`, and `web`.
 
 The way it works is:
 
-- `web` constantly polls `mesh` for 2D and 3D objects. 
+- `web` constantly polls `mesh` for 2D and 3D objects.
 - If it receives a 2D object, it displays it on the browser.
 - If it receives a 3D object, it POSTs it to the `render` service.
 - The `render` service, in turn, returns an image of the rendered mesh, which is then displayed on the browser.
@@ -49,9 +49,13 @@ Simply install Garden, clone this repository, and `garden dev`.
 
 ## Instructions
 
-1. Install Garden
+1. [Install Garden](https://docs.garden.io/basics/installation) (this project requires version 0.9.10 or later)
 2. Clone this repo
-3. `garden dev --hot=mesh`
+3. Run `garden dev --hot=mesh`, and leave it running.
+4. Add `garden.local` to your `/etc/hosts` file and point it to your local Kubernetes cluster.
+5. You should see the ingress endpoint for the `web` service in the output. Open that in your browser.
+6. Now go and mess around! Open `mesh/main.go` and look for the commented out lines in the `magic()` function. Try uncommenting the sections one by one
+   and observe the results in the browser (it takes a few seconds to rebuild each time).
 
 <p align="center">
   <img src="img/dashboard.gif">

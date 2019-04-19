@@ -1,23 +1,22 @@
-module:
-  name: web
-  description: Front-end.
-  type: container
-  build:
-    dependencies: [base-image]
-  buildArgs:
-    BASE_IMAGE_VERSION: ${modules.base-image.version}
-  hotReload:
-    sync:
-      - target: /go/src/app
-  services:
-    - name: web
-      hotReloadArgs:
-        ["find . | entr -r ./hotreload.sh"]
-      ports:
-        - name: http
-          containerPort: 8080
-      ingresses:
-        - path: /web
-          port: http
-          annotations: 
-            "nginx.ingress.kubernetes.io/proxy-body-size": "0"
+kind: Module
+name: web
+description: Front-end.
+type: container
+build:
+  dependencies: [base-image]
+buildArgs:
+  BASE_IMAGE_VERSION: ${modules.base-image.version}
+hotReload:
+  sync:
+    - target: /go/src/app
+services:
+  - name: web
+    hotReloadArgs: ["find . | entr -r ./hotreload.sh"]
+    ports:
+      - name: http
+        containerPort: 8080
+    ingresses:
+      - path: /web
+        port: http
+        annotations:
+          "nginx.ingress.kubernetes.io/proxy-body-size": "0"
