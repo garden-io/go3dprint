@@ -18,15 +18,15 @@ For the live demo a simpler version was used. This is the "full version," which 
 
 - Functionality is split into loosely coupled microservices
 - Running as lightweight containers
-- That communicate via API calls.
+- That communicate via API calls and websockets.
 
 And thanks to [Garden](https://garden.io/), the workflow is configured so that it:
 
 - Re-builds and re-deploys on every code change
-- Has hot reload to bring 2010’s live feedback back
+- Can use hot reload, so containers can be update without restarting
 - Uses the same tooling for all environments—local, CI, remote.
 
-The differences and the conversion process are explained in detail in the article, [From Demo To Microservices, Using Garden]().
+The differences and the conversion process will be explained in detail in the upcoming article, Needlessly Distributed Phallic Object Generator, to be published on April 23.
 
 ## How It Works
 
