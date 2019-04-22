@@ -10,17 +10,12 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", serve)
-
 	port := "8080"
 	if len(os.Args) > 2 {
-			port = os.Args[2]
+		port = os.Args[2]
 	}
-
-	err := http.ListenAndServe(fmt.Sprintf(":%s", port), nil)
-	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
-	}
+	http.HandleFunc("/", serve)
+	fmt.Println(http.ListenAndServe(fmt.Sprintf(":%s", port), nil))
 }
 
 func serve(w http.ResponseWriter, r *http.Request) {
