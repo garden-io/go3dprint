@@ -26,7 +26,7 @@ And thanks to [Garden](https://garden.io/), the workflow is configured so that i
 - Can use hot reload, so containers can be update without restarting
 - Uses the same tooling for all environments—local, CI, remote.
 
-The differences and the conversion process will be explained in detail in the upcoming article, _Needlessly Distributed Phallic Object Generator_, to be published on April 23.
+The differences and the conversion process are explained in detail in the article [_Needlessly Distributed Phallic Object Generator_](https://medium.com/garden-io/the-needlessly-distributed-phallic-object-generator-2da47672be6f).
 
 ## How It Works
 
