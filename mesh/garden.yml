@@ -1,4 +1,4 @@
-Kind: Module
+kind: Module
 type: container
 name: mesh
 services:

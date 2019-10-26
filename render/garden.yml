@@ -20,6 +20,3 @@ services:
         port: http
         annotations:
           "nginx.ingress.kubernetes.io/proxy-body-size": "0"
-tests:
-- name: unit
-  args: [go, test]
