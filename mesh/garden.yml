@@ -1,17 +1,8 @@
 kind: Module
-name: mesh
-description: Generates vector and mesh.
 type: container
-build:
-  dependencies: [base-image]
-buildArgs:
-  BASE_IMAGE_VERSION: ${modules.base-image.version}
-hotReload:
-  sync:
-    - target: /go/src/app
+name: mesh
 services:
   - name: mesh
-    hotReloadArgs: ["find . | entr -r ./hotreload.sh"]
     ports:
       - name: http
         containerPort: 8080
@@ -20,3 +11,7 @@ services:
         port: http
         annotations:
           "nginx.ingress.kubernetes.io/proxy-body-size": "0"
+hotReload:
+  sync:
+    - target: /app/
+      source: bin/

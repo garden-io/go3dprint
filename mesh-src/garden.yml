@@ -1,0 +1,5 @@
+kind: Module
+type: exec
+name: mesh-src
+build:
+  command: ["/bin/bash", "hotreload.sh"]
