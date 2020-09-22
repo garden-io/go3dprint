@@ -49,13 +49,11 @@ Simply install Garden, clone this repository, and `garden dev`.
 
 ## Instructions
 
-1. [Install Garden](https://docs.garden.io/basics/installation) (this project requires version 0.9.10 or later)
-2. Clone this repo
+1. [Install Garden](https://docs.garden.io/getting-started/1-installation).
+2. Clone this repo.
 3. Run `garden dev --hot=mesh`, and leave it running.
-4. Add `garden.local` to your `/etc/hosts` file and point it to your local Kubernetes cluster.
-5. You should see the ingress endpoint for the `web` service in the output. Open that in your browser.
-6. Now go and mess around! Open `mesh/main.go` and look for the commented out lines in the `magic()` function. Try uncommenting the sections one by one
-   and observe the results in the browser (it takes a few seconds to rebuild each time).
+4. You should see the ingress endpoint for the `web` service in the output. Open that in your browser.
+5. Now go and mess around! Open `mesh/main.go` and look for the commented out lines in the `magic()` function. Try uncommenting the sections one by one and observe the results in the browser (it takes a few seconds to rebuild each time).
 
 <p align="center">
   <img src="img/dashboard.gif">
